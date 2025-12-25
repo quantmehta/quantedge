@@ -1,0 +1,102 @@
+[
+  {
+    "event": "Nirav Modi-PNB Scam (\u00e2\u201a\u00b914k Cr)",
+    "date": "2018-02",
+    "sector": "PSU Banks",
+    "performance_matrix": {
+      "NIFTY_50": -3.73,
+      "NIFTY_AUTO": -2.92,
+      "NIFTY_BANK": -6.17,
+      "NIFTY_FMCG": -3.74,
+      "NIFTY_METAL": -2.98,
+      "NIFTY_MIDCAP_100": -2.19,
+      "NIFTY_NEXT_50": -2.58,
+      "NIFTY_PHARMA": -2.07,
+      "NIFTY_PSU_BANK": -13.45,
+      "NIFTY_PVT_BANK": -5.17,
+      "NIFTY_REALTY": 0.23,
+      "SENSEX": -3.76,
+      "VIX": 0.95
+    }
+  },
+  {
+    "event": "IL&FS Default (\u00e2\u201a\u00b991k Cr)",
+    "date": "2018-09",
+    "sector": "NBFC",
+    "performance_matrix": {
+      "NIFTY_50": -6.25,
+      "NIFTY_AUTO": -14.27,
+      "NIFTY_BANK": -9.88,
+      "NIFTY_FMCG": -8.13,
+      "NIFTY_METAL": -1.77,
+      "NIFTY_MIDCAP_100": -14.0,
+      "NIFTY_NEXT_50": -13.1,
+      "NIFTY_PHARMA": -3.95,
+      "NIFTY_PSU_BANK": -15.16,
+      "NIFTY_PVT_BANK": -11.0,
+      "NIFTY_REALTY": -20.83,
+      "SENSEX": -6.1,
+      "VIX": 35.28
+    }
+  },
+  {
+    "event": "Jet Airways Collapse",
+    "date": "2019-04",
+    "sector": "Aviation",
+    "performance_matrix": {
+      "NIFTY_50": 0.1,
+      "NIFTY_AUTO": -2.0,
+      "NIFTY_BANK": -2.13,
+      "NIFTY_FMCG": 0.06,
+      "NIFTY_METAL": -0.12,
+      "NIFTY_MIDCAP_100": -4.79,
+      "NIFTY_NEXT_50": -1.7,
+      "NIFTY_PHARMA": -0.06,
+      "NIFTY_PSU_BANK": -10.77,
+      "NIFTY_PVT_BANK": -2.74,
+      "NIFTY_REALTY": -5.41,
+      "SENSEX": -0.19,
+      "VIX": 27.1
+    }
+  },
+  {
+    "event": "Yes Bank Moratorium",
+    "date": "2020-03",
+    "sector": "Private Banks",
+    "performance_matrix": {
+      "NIFTY_50": -25.86,
+      "NIFTY_AUTO": -32.07,
+      "NIFTY_BANK": -36.93,
+      "NIFTY_FMCG": -9.54,
+      "NIFTY_METAL": -29.31,
+      "NIFTY_MIDCAP_100": -31.2,
+      "NIFTY_NEXT_50": -21.74,
+      "NIFTY_PHARMA": -6.75,
+      "NIFTY_PSU_BANK": -30.93,
+      "NIFTY_PVT_BANK": -38.94,
+      "NIFTY_REALTY": -38.46,
+      "SENSEX": -25.9,
+      "VIX": 138.28
+    }
+  },
+  {
+    "event": "Adani-Hindenburg Report",
+    "date": "2023-01",
+    "sector": "Conglomerate/Energy",
+    "performance_matrix": {
+      "NIFTY_50": -3.19,
+      "NIFTY_AUTO": 4.26,
+      "NIFTY_BANK": -6.23,
+      "NIFTY_FMCG": 1.73,
+      "NIFTY_METAL": -10.3,
+      "NIFTY_MIDCAP_100": -4.4,
+      "NIFTY_NEXT_50": -8.72,
+      "NIFTY_PHARMA": -1.56,
+      "NIFTY_PSU_BANK": -13.11,
+      "NIFTY_PVT_BANK": -5.85,
+      "NIFTY_REALTY": -6.51,
+      "SENSEX": -2.39,
+      "VIX": 14.27
+    }
+  }
+]

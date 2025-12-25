@@ -1,0 +1,102 @@
+[
+    {
+        "id": "UNIV_NIFTYBEES",
+        "symbol": "NIFTYBEES",
+        "name": "Nippon India ETF Nifty BeES",
+        "assetClass": "EQUITY",
+        "sector": "INDEX_ETF",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "NIFTY50"
+    },
+    {
+        "id": "UNIV_GOLDBEES",
+        "symbol": "GOLDBEES",
+        "name": "Nippon India ETF Gold BeES",
+        "assetClass": "COMMODITY",
+        "sector": "PRECIOUS_METALS",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "GOLD"
+    },
+    {
+        "id": "UNIV_LIQUIDBEES",
+        "symbol": "LIQUIDBEES",
+        "name": "Nippon India ETF Liquid BeES",
+        "assetClass": "DEBT",
+        "sector": "LIQUID",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "LIQUID"
+    },
+    {
+        "id": "UNIV_RELIANCE",
+        "symbol": "RELIANCE",
+        "name": "Reliance Industries Ltd",
+        "assetClass": "EQUITY",
+        "sector": "ENERGY",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "NIFTY50"
+    },
+    {
+        "id": "UNIV_HDFCBANK",
+        "symbol": "HDFCBANK",
+        "name": "HDFC Bank Ltd",
+        "assetClass": "EQUITY",
+        "sector": "FINANCIALS",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "BANKNIFTY"
+    },
+    {
+        "id": "UNIV_TCS",
+        "symbol": "TCS",
+        "name": "Tata Consultancy Services Ltd",
+        "assetClass": "EQUITY",
+        "sector": "TECHNOLOGY",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "CNXIT"
+    },
+    {
+        "id": "UNIV_INFY",
+        "symbol": "INFY",
+        "name": "Infosys Ltd",
+        "assetClass": "EQUITY",
+        "sector": "TECHNOLOGY",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "CNXIT"
+    },
+    {
+        "id": "UNIV_ITC",
+        "symbol": "ITC",
+        "name": "ITC Ltd",
+        "assetClass": "EQUITY",
+        "sector": "FMCG",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "CNXFMCG"
+    },
+    {
+        "id": "UNIV_LT",
+        "symbol": "LT",
+        "name": "Larsen & Toubro Ltd",
+        "assetClass": "EQUITY",
+        "sector": "CONSTRUCTION",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "NIFTYINFRA"
+    },
+    {
+        "id": "UNIV_SBIN",
+        "symbol": "SBIN",
+        "name": "State Bank of India",
+        "assetClass": "EQUITY",
+        "sector": "FINANCIALS",
+        "exchange": "NSE",
+        "liquidityTag": "HIGH",
+        "benchmarkMapping": "BANKNIFTY"
+    }
+]

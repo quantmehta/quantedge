@@ -1,0 +1,268 @@
+{
+  "event_impact": [
+    {
+      "date": "2014-05-16",
+      "category": "Political",
+      "event": "2014 General Election Results",
+      "description": "BJP wins majority, first single-party majority in 30 years.",
+      "impact_scope": "Macro",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": 0.0,
+        "30d_return": 0.0,
+        "90d_return": 0.0
+      }
+    },
+    {
+      "date": "2015-01-15",
+      "category": "Micro",
+      "event": "RBI Repo Rate Cut",
+      "description": "Unscheduled 25 bps rate cut, signaling start of easing cycle.",
+      "impact_scope": "Monetary",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": 0.0,
+        "30d_return": 0.0,
+        "90d_return": 0.0
+      }
+    },
+    {
+      "date": "2015-08-24",
+      "category": "Macro",
+      "event": "China Devaluation / Black Monday",
+      "description": "Global equity markets crash following China's currency devaluation.",
+      "impact_scope": "Global",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": 0.0,
+        "30d_return": 0.0,
+        "90d_return": 0.0
+      }
+    },
+    {
+      "date": "2016-06-23",
+      "category": "Macro",
+      "event": "Brexit Vote",
+      "description": "UK votes to leave the EU, global market volatility.",
+      "impact_scope": "Global",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": 2.96,
+        "30d_return": 6.76,
+        "90d_return": 9.63
+      }
+    },
+    {
+      "date": "2016-11-08",
+      "category": "Major News",
+      "event": "Demonetization",
+      "description": "High-value currency notes (500/1000) withdrawn overnight.",
+      "impact_scope": "Domestic",
+      "sentiment": "Volatility",
+      "performance": {
+        "7d_return": -3.8,
+        "30d_return": -2.02,
+        "90d_return": 3.99
+      }
+    },
+    {
+      "date": "2017-07-01",
+      "category": "Major News",
+      "event": "GST Implementation",
+      "description": "One Nation One Tax - biggest indirect tax reform in India.",
+      "impact_scope": "Domestic",
+      "sentiment": "Long-term Bullish",
+      "performance": {
+        "7d_return": 1.62,
+        "30d_return": 5.2,
+        "90d_return": 2.54
+      }
+    },
+    {
+      "date": "2018-09-01",
+      "category": "Micro",
+      "event": "IL&FS Crisis",
+      "description": "Defaults by IL&FS trigger liquidity crisis in NBFC sector.",
+      "impact_scope": "Financial Sector",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": -1.25,
+        "30d_return": -6.25,
+        "90d_return": -6.03
+      }
+    },
+    {
+      "date": "2019-02-26",
+      "category": "Political",
+      "event": "Balakot Airstrikes",
+      "description": "Geopolitical tension between India and Pakistan.",
+      "impact_scope": "National",
+      "sentiment": "Volatility",
+      "performance": {
+        "7d_return": 2.28,
+        "30d_return": 7.56,
+        "90d_return": 10.38
+      }
+    },
+    {
+      "date": "2019-05-23",
+      "category": "Political",
+      "event": "2019 General Election Results",
+      "description": "NDA returns with larger majority.",
+      "impact_scope": "Macro",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": 0.66,
+        "30d_return": -1.22,
+        "90d_return": -9.31
+      }
+    },
+    {
+      "date": "2019-09-20",
+      "category": "Micro",
+      "event": "Corporate Tax Cut",
+      "description": "Nirmala Sitharaman announces massive corporate tax cuts.",
+      "impact_scope": "Domestic",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": -1.08,
+        "30d_return": -0.1,
+        "90d_return": 5.79
+      }
+    },
+    {
+      "date": "2020-03-23",
+      "category": "Major News",
+      "event": "COVID-19 Lockdown",
+      "description": "India announces nationwide lockdown, market hit lower circuit.",
+      "impact_scope": "Global/Domestic",
+      "sentiment": "Extreme Bearish",
+      "performance": {
+        "7d_return": 10.21,
+        "30d_return": 19.39,
+        "90d_return": 32.18
+      }
+    },
+    {
+      "date": "2021-02-01",
+      "category": "Micro",
+      "event": "Growth Budget 2021",
+      "description": "Budget focused on infrastructure and spending post-COVID.",
+      "impact_scope": "Domestic",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": 3.15,
+        "30d_return": 2.96,
+        "90d_return": -0.09
+      }
+    },
+    {
+      "date": "2022-02-24",
+      "category": "Macro",
+      "event": "Russia-Ukraine War",
+      "description": "Russia invades Ukraine, oil prices spike, global markets crash.",
+      "impact_scope": "Global",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": -2.48,
+        "30d_return": 3.38,
+        "90d_return": -2.93
+      }
+    },
+    {
+      "date": "2022-05-04",
+      "category": "Micro",
+      "event": "Off-cycle RBI Rate Hike",
+      "description": "RBI surprises market with 40 bps hike to control inflation.",
+      "impact_scope": "Monetary",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": -5.24,
+        "30d_return": -0.68,
+        "90d_return": 4.23
+      }
+    },
+    {
+      "date": "2023-01-24",
+      "category": "Major News",
+      "event": "Hindenburg-Adani Report",
+      "description": "Short-seller report triggers massive sell-off in Adani Group stocks.",
+      "impact_scope": "Selected Stocks",
+      "sentiment": "Bearish",
+      "performance": {
+        "7d_return": -1.54,
+        "30d_return": -2.38,
+        "90d_return": -0.69
+      }
+    },
+    {
+      "date": "2023-06-01",
+      "category": "Micro",
+      "event": "Introduction of NIFTY Financial Services (FINNIFTY) Weekly Options",
+      "description": "New liquidity instrument for traders.",
+      "impact_scope": "Derivatives",
+      "sentiment": "Neutral",
+      "performance": {
+        "7d_return": 0.16,
+        "30d_return": 4.25,
+        "90d_return": 3.88
+      }
+    },
+    {
+      "date": "2024-02-01",
+      "category": "Micro",
+      "event": "Interim Budget 2024",
+      "description": "Focus on fiscal consolidation.",
+      "impact_scope": "Domestic",
+      "sentiment": "Bullish",
+      "performance": {
+        "7d_return": -0.33,
+        "30d_return": 2.52,
+        "90d_return": 3.64
+      }
+    },
+    {
+      "date": "2024-06-04",
+      "category": "Political",
+      "event": "2024 General Election Results",
+      "description": "Unexpected lower tally for NDA, markets crash then recover.",
+      "impact_scope": "Macro",
+      "sentiment": "Volatility",
+      "performance": {
+        "7d_return": 3.11,
+        "30d_return": 7.53,
+        "90d_return": 11.76
+      }
+    }
+  ],
+  "category_summary": {
+    "Political": {
+      "count": 4,
+      "avg_30d": 3.47,
+      "positive_hits": 2
+    },
+    "Micro": {
+      "count": 7,
+      "avg_30d": 0.39,
+      "positive_hits": 3
+    },
+    "Macro": {
+      "count": 3,
+      "avg_30d": 3.38,
+      "positive_hits": 2
+    },
+    "Major News": {
+      "count": 4,
+      "avg_30d": 5.05,
+      "positive_hits": 2
+    }
+  },
+  "sectoral_themes": {
+    "NIFTY_AUTO": "Performance driven by BS-VI transition (2020) and EV shift.",
+    "NIFTY_IT": "Massive rally during COVID (remote work) followed by 2023 slowdown.",
+    "NIFTY_PSU_BANK": "Deep consolidation until 2021, massive structural rerating 2022-2024.",
+    "NIFTY_METAL": "Correlated with Global Commodity cycles and China demand.",
+    "NIFTY_REALTY": "Long bear cycle (2014-2020), sharp recovery post-COVID RERA consolidation.",
+    "NIFTY_FMCG": "Defensive during volatility, slow but steady growth."
+  }
+}

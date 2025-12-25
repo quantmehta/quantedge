@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// CORE PORTFOLIO INGESTION
+// -----------------------------------------------------------------------------
+
+model PortfolioUpload {
+  id               String    @id @default(uuid())
+  originalFilename String
+  storedPath       String
+  fileHashSha256   String
+  fileType         String    // CSV, XLSX
+  rowCount         Int?
+  status           String    // UPLOADED, PARSED, VALIDATED, FAILED
+  validationJson   String?   // JSON string of ValidationResult
+  mappingJson      String?   // JSON string of user column mapping
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  holdings         Holding[]
+  runs             Run[]
+}
+
+model Holding {
+  id                   String           @id @default(uuid())
+  portfolioUploadId    String
+  rowNumber            Int
+  rawIdentifier        String
+  resolvedInstrumentId String?
+  name                 String?
+  quantity             Decimal
+  costPrice            Decimal
+  currency             String           @default("INR")
+  assetClass           String?
+  sector               String?
+  createdAt            DateTime         @default(now())
+
+  upload               PortfolioUpload  @relation(fields: [portfolioUploadId], references: [id])
+  instrument           Instrument?      @relation(fields: [resolvedInstrumentId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// INSTRUMENT & MAPPING
+// -----------------------------------------------------------------------------
+
+model Instrument {
+  id             String              @id @default(uuid())
+  identifierType String              // ISIN, TICKER
+  identifier     String              @unique
+  displayName    String
+  exchange       String?
+  sector         String?
+  assetClass     String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  holdings       Holding[]
+  mappings       InstrumentMapping[]
+  prices         MarketPrice[]
+  priceHistory   MarketPriceEod[]
+}
+
+model InstrumentMapping {
+  id            String          @id @default(uuid())
+  rawIdentifier String
+  uploadId      String?         // Nullable for global mappings
+  instrumentId  String
+  matchType     String          // EXACT, FUZZY, MANUAL
+  confidence    Float
+  source        String
+  createdAt     DateTime        @default(now())
+
+  instrument    Instrument      @relation(fields: [instrumentId], references: [id])
+
+  @@index([rawIdentifier])
+}
+
+// -----------------------------------------------------------------------------
+// MARKET DATA
+// -----------------------------------------------------------------------------
+
+model MarketPrice {
+  id           String     @id @default(uuid())
+  instrumentId String
+  price        Decimal
+  currency     String     @default("INR")
+  asOf         DateTime
+  source       String
+
+  instrument   Instrument @relation(fields: [instrumentId], references: [id])
+
+  @@unique([instrumentId, asOf, source])
+}
+
+model MarketPriceEod {
+  id           String     @id @default(uuid())
+  instrumentId String
+  date         DateTime   // Midnight UTC
+  close        Decimal
+  currency     String
+  source       String
+
+  instrument   Instrument @relation(fields: [instrumentId], references: [id])
+
+  @@unique([instrumentId, date, source])
+}
+
+// -----------------------------------------------------------------------------
+// RULES & VERSIONING
+// -----------------------------------------------------------------------------
+
+model Ruleset {
+  id          String           @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime         @default(now())
+  
+  versions    RulesetVersion[]
+}
+
+model RulesetVersion {
+  id             String   @id @default(uuid())
+  rulesetId      String
+  version        Int
+  definitionJson String   // JSON
+  isActive       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  ruleset        Ruleset  @relation(fields: [rulesetId], references: [id])
+  runs           Run[]
+}
+
+// -----------------------------------------------------------------------------
+// RUN SYSTEM (IMMUTABLE LINEAGE)
+// -----------------------------------------------------------------------------
+
+model Run {
+  id                  String          @id @default(uuid())
+  portfolioUploadId   String
+  rulesetVersionId    String?
+  sessionId           String?         // Browser session UUID for audit trail
+  status              String          // CREATED, SNAPSHOT_DONE, FAILED etc.
+  asOfMarketTimestamp DateTime?
+  failureReason       String?
+  auditJson           String?         // JSON event log (append-only)
+  auditSummary        String?
+  createdAt           DateTime        @default(now())
+
+  upload              PortfolioUpload @relation(fields: [portfolioUploadId], references: [id])
+  rulesetVersion      RulesetVersion? @relation(fields: [rulesetVersionId], references: [id])
+
+  snapshots           RunSnapshot[]
+  scenarios           RunScenario[]
+  events              RunEventImpact[]
+  recommendations     RunRecommendation[]
+  overrides           RunOverride[]
+  reports             Report[]
+}
+
+model RunSnapshot {
+  id           String   @id @default(uuid())
+  runId        String
+  snapshotJson String   // JSON
+  createdAt    DateTime @default(now())
+
+  run          Run      @relation(fields: [runId], references: [id])
+}
+
+model RunScenario {
+  id           String   @id @default(uuid())
+  runId        String
+  scenarioType String
+  paramsJson   String   // JSON
+  resultJson   String   // JSON
+  createdAt    DateTime @default(now())
+
+  run          Run      @relation(fields: [runId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// EVENTS & MARKET CONDITIONS
+// -----------------------------------------------------------------------------
+
+model Event {
+  id                 String   @id @default(uuid())
+  title              String
+  category           String   // MACRO, GEOPOLITICAL, SECTOR, COMPANY
+  direction          String   // POSITIVE, NEGATIVE, MIXED
+  magnitudePct       Float    // Expected % move [-30, +30]
+  confidence         Float    // 0-1
+  horizon            String   // 1W, 1M, 3M, 6M
+  affectedScopeType  String   // BENCHMARK, SECTOR, INSTRUMENT
+  affectedScopeValue String   // benchmarkId, sector name, or instrumentId
+  sourcesJson        String   // JSON array of sources
+  observedAt         DateTime
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  isActive           Boolean  @default(true)
+}
+
+model RunEventImpact {
+  id                String   @id @default(uuid())
+  runId             String
+  eventListJson     String?  // JSON: events used in computation
+  impactSummaryJson String?  // JSON: portfolio totals + pnlAtRisk
+  holdingImpactJson String?  // JSON: per-holding impacts with traces
+  traceJson         String?  // JSON: full traceability data
+  // Legacy fields for backwards compatibility
+  eventJson         String?  // Deprecated: old field
+  impactJson        String?  // Deprecated: old field
+  createdAt         DateTime @default(now())
+
+  run               Run      @relation(fields: [runId], references: [id])
+  impactRows        EventImpactRow[]
+}
+
+model EventImpactRow {
+  id                      String         @id @default(uuid())
+  runEventImpactId        String
+  eventId                 String
+  holdingId               String
+  holdingValue            Float
+  sensitivity             Float
+  magnitudePct            Float
+  rawImpact               Float
+  confidenceWeightedImpact Float
+  priceTimestampMs        BigInt?        // Optional, sqlite bigint
+  
+  runEventImpact          RunEventImpact @relation(fields: [runEventImpactId], references: [id])
+  
+  @@unique([runEventImpactId, eventId, holdingId])
+}
+
+model RunRecommendation {
+  id                 String   @id @default(uuid())
+  runId              String
+  recommendationType String
+  assetInstrumentId  String?
+  resultJson         String   // JSON
+  createdAt          DateTime @default(now())
+
+  run                Run      @relation(fields: [runId], references: [id])
+}
+
+model RunOverride {
+  id               String   @id @default(uuid())
+  runId            String
+  recommendationId String
+  ruleCode         String
+  ruleSeverity     String   // HARD, SOFT
+  reason           String
+  actor            String
+  createdAt        DateTime @default(now())
+
+  run              Run      @relation(fields: [runId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// REPORTING
+// -----------------------------------------------------------------------------
+
+model Report {
+  id               String   @id @default(uuid())
+  runId            String   // FK to Run for traceability
+  status           String   // QUEUED, GENERATING, READY, FAILED
+  type             String   @default("Standard")
+  storedPath       String?
+  error            String?
+  generatedBy      String   @default("system")
+  errorMessage     String?
+  reportInputsJson String?  // Artifact IDs used in generation
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  run              Run      @relation(fields: [runId], references: [id])
+}
+

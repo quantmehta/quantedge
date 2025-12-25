@@ -1,0 +1,26 @@
+{
+    "name": "Small Portfolio Current Prices",
+    "asOf": "2025-12-18T13:00:00+05:30",
+    "prices": [
+        {
+            "identifier": "RELIANCE",
+            "price": 2520
+        },
+        {
+            "identifier": "TCS",
+            "price": 3680
+        },
+        {
+            "identifier": "HDFCBANK",
+            "price": 1650
+        },
+        {
+            "identifier": "INFY",
+            "price": 1450
+        },
+        {
+            "identifier": "ITC",
+            "price": 440
+        }
+    ]
+}

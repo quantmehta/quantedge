@@ -1,0 +1,177 @@
+{
+    "metadata": {
+        "title": "QuantEdge Fund Manager Intelligence Hub (10Y)",
+        "version": "1.1",
+        "aum_perspective": "1 Billion USD",
+        "coverage_period": "2015-2025",
+        "resolution": "Micro-Macro & Geopolitical High-Res"
+    },
+    "geopolitical_detailed": [
+        {
+            "date": "2019-02-14",
+            "event": "Pulwama Attack",
+            "impact": "Market fell ~2% over 3 sessions; shift to defense-centric sentiment.",
+            "fund_manager_note": "Initial panic followed by V-shaped recovery post-retaliation."
+        },
+        {
+            "date": "2019-02-26",
+            "event": "Balakot Airstrike",
+            "impact": "Intraday volatility; Sensex dipped 239 points but recovered within 24 hours.",
+            "fund_manager_note": "Risk premium spiked briefly; currency remained stable."
+        },
+        {
+            "date": "2020-06-15",
+            "event": "Galwan Valley Clash",
+            "impact": "Sensex fell 1,000 pts from intraday high on June 16; volatility in Banks.",
+            "fund_manager_note": "Triggered structural shift in FDI rules for border-sharing nations; decline in Chinese tech influence in India."
+        },
+        {
+            "date": "2023-11",
+            "event": "Red Sea Crisis Start",
+            "impact": "Spike in shipping freight rates; negative for export-heavy themes.",
+            "fund_manager_note": "Correlated with supply chain delays in Auto components/Electronics."
+        }
+    ],
+    "micro_macro_resolution": [
+        {
+            "date": "2018-03-26",
+            "event": "SEBI ASM Framework Launch",
+            "impact": "100% margin on 34 stocks initially; massive liquidity drop in high-beta smallcaps.",
+            "fund_manager_note": "Structural 'cooling' of speculative bubbles in the midcap segment."
+        },
+        {
+            "period": "May/Nov Quarterly",
+            "event": "MSCI India Rebalancing",
+            "impact": "Average passive inflow/outflow of $2B-$5B per cycle.",
+            "fund_manager_note": "Critical for large-cap liquidity positioning; heaviest inflows usually final 10 days of the month."
+        },
+        {
+            "date": "2022-04-28",
+            "event": "Indonesia Palm Oil Export Ban",
+            "impact": "Raw material cost spike for FMCG; Britannia -6% in single session.",
+            "fund_manager_note": "Pro-cyclical for domestic refiners (Adani Wilmar); cost-squeeze for soaps/biscuits."
+        },
+        {
+            "date": "2020-04-01",
+            "event": "Dividend Distribution Tax (DDT) Abolition",
+            "impact": "Shifted tax to shareholders; major benefit for FIIs (DTAA credits).",
+            "fund_manager_note": "Rerated Dividend Yield stocks for foreign investors; hit for domestic HNIs in 42% bracket."
+        },
+        {
+            "date": "2018-02-01",
+            "event": "LTCG Reintroduction (10%)",
+            "impact": "Ended long tax-free era for equities; initial market correction.",
+            "fund_manager_note": "Fund managers shifted to more tax-aware churn strategies."
+        },
+        {
+            "event": "El Nino 2023-24",
+            "impact": "Deficient rainfall impacted rural demand and FMCG volume growth.",
+            "fund_manager_note": "Sectoral rotation from Rural-heavy to Urban-heavy themes."
+        }
+    ],
+    "regulatory_framework": [
+        {
+            "year": 2015,
+            "event": "LODR Regulations",
+            "impact": "Standardized disclosure requirements; improved corporate governance transparency.",
+            "fund_manager_note": "Critical for large-cap ESG compliance."
+        },
+        {
+            "year": 2018,
+            "event": "MF Re-categorization",
+            "impact": "Forced massive reallocation of capital as funds were restricted to specific market cap buckets.",
+            "causal_chain": "Asset Selloff in Mid/Small Cap -> Overcrowding in Large Cap -> Divergence in 2018 Performance."
+        },
+        {
+            "year": 2020,
+            "event": "New Margin Rules",
+            "impact": "Peak margin requirements implemented; lowered intra-day leverage for retail.",
+            "causal_chain": "Lower Volumes -> Initial Liquidity Drop -> Reduced Intraday Volatility long-term."
+        },
+        {
+            "year": 2023,
+            "event": "T+1 Settlement",
+            "impact": "Fastest settlement cycle globally; improved capital efficiency for FIIs.",
+            "fund_manager_note": "Significant for $1B funds managing high-churn strategies."
+        },
+        {
+            "year": 2024,
+            "event": "F&O Speculation Curb",
+            "impact": "STT increase and expiry reductions to lower retail derivative exposure.",
+            "fund_manager_note": "May lead to 'Cash Market' rerating as speculative money exits options."
+        }
+    ],
+    "corporate_crises_and_shocks": [
+        {
+            "date": "2018-02",
+            "event": "Nirav Modi-PNB Scam (₹14k Cr)",
+            "sector": "PSU Banks",
+            "impact_score": 8,
+            "causal_link": "Loss of trust in state-owned bank internal controls; Multi-year underperformance for PSU Bank index."
+        },
+        {
+            "date": "2018-09",
+            "event": "IL&FS Default (₹91k Cr)",
+            "sector": "NBFC",
+            "impact_score": 10,
+            "causal_link": "Liquidity freeze for shadow banks; Massive contagion to DHFL, Yes Bank; Portfolio valuation hits in Debt MFs."
+        },
+        {
+            "date": "2019-04",
+            "event": "Jet Airways Collapse",
+            "sector": "Aviation",
+            "impact_score": 6,
+            "causal_link": "Sector consolidation; InterGlobe Aviation (Indigo) market share dominance begins."
+        },
+        {
+            "date": "2020-03",
+            "event": "Yes Bank Moratorium",
+            "sector": "Private Banks",
+            "impact_score": 9,
+            "causal_link": "Systemic risk concerns; RBI intervention; Reconstruction via SBI consortium."
+        },
+        {
+            "date": "2023-01",
+            "event": "Adani-Hindenburg Report",
+            "sector": "Conglomerate/Energy",
+            "impact_score": 9,
+            "causal_link": "$150B market cap erosion; Short-term FII panic; Eventual recovery after refinancing."
+        }
+    ],
+    "macro_micro_trends": [
+        {
+            "era": "2016-2018",
+            "theme": "Formalization of Indian Economy",
+            "driver": "Demonetization + GST",
+            "fund_manager_strategy": "Shift from Unorganized players to Market Leaders in FMCG, Textiles, and Building Materials."
+        },
+        {
+            "era": "2019",
+            "theme": "Valuation Reset",
+            "driver": "Corporate Tax Cut (30% to 22%)",
+            "fund_manager_strategy": "Immediate 10% rerating of PAT; Bullish mid-term transition."
+        },
+        {
+            "era": "2022-2024",
+            "theme": "Manufacturing & Defense Pivot",
+            "driver": "PLI Schemes (₹1.97L Cr) + Make in India",
+            "fund_manager_strategy": "Overweight Defense PSUs, Electronics Manufacturing, and EMS."
+        },
+        {
+            "era": "2024-2025",
+            "theme": "Infrastructure Multiplier",
+            "driver": "₹11.1L Cr Capital Allocation",
+            "fund_manager_strategy": "Growth in Cement, Steel, and Heavy Engineering."
+        }
+    ],
+    "monetary_policy_cycles": {
+        "easing_cycle": "2015-2016 (Repo 8% -> 6.25%) - Stimulated mid-cap bull run.",
+        "tightening_cycle": "2022-2023 (Repo 4% -> 6.5%) - Targeted inflation control post-COVID.",
+        "new_easing_expectation": "2025 (Projected cuts 6.5% -> 5.25%) - Current environment focus."
+    },
+    "market_structure_evolution": {
+        "algo_growth": "HFT and Algos now contribute >50% of volume; increased intra-day noise.",
+        "retail_dominance": "DIP (Direct Investor Participation) surges post-2020 via discount brokers.",
+        "derivative_shift": "Nifty Financial Services (FINNIFTY) emergence as a primary trading vehicle (2023)."
+    }
+}

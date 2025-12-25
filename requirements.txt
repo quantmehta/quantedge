@@ -1,0 +1,11 @@
+# Groww API SDK
+growwapi
+
+# Environment variable loading
+python-dotenv
+
+# TOTP authentication (optional but recommended)
+pyotp
+
+# For instrument dataframe handling
+pandas

@@ -1,0 +1,62 @@
+{
+    "name": "Expected Snapshot for Small Portfolio",
+    "portfolioMetrics": {
+        "investedCapital": 151100,
+        "currentValue": 157750,
+        "unrealizedPnL": 6650,
+        "unrealizedPnLPct": 4.40,
+        "holdingCount": 5
+    },
+    "holdings": [
+        {
+            "identifier": "RELIANCE",
+            "invested": 24000,
+            "currentValue": 25200,
+            "unrealizedPnL": 1200,
+            "unrealizedPnLPct": 5.00,
+            "weight": 15.98
+        },
+        {
+            "identifier": "TCS",
+            "invested": 52500,
+            "currentValue": 55200,
+            "unrealizedPnL": 2700,
+            "unrealizedPnLPct": 5.14,
+            "weight": 34.98
+        },
+        {
+            "identifier": "HDFCBANK",
+            "invested": 32000,
+            "currentValue": 33000,
+            "unrealizedPnL": 1000,
+            "unrealizedPnLPct": 3.13,
+            "weight": 20.92
+        },
+        {
+            "identifier": "INFY",
+            "invested": 35000,
+            "currentValue": 36250,
+            "unrealizedPnL": 1250,
+            "unrealizedPnLPct": 3.57,
+            "weight": 22.98
+        },
+        {
+            "identifier": "ITC",
+            "invested": 12600,
+            "currentValue": 13200,
+            "unrealizedPnL": 600,
+            "unrealizedPnLPct": 4.76,
+            "weight": 8.37
+        }
+    ],
+    "concentrationMetrics": {
+        "maxSingleAsset": {
+            "identifier": "TCS",
+            "weight": 34.98
+        },
+        "maxSector": {
+            "sector": "IT",
+            "weight": 57.96
+        }
+    }
+}

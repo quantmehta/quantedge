@@ -1,0 +1,6 @@
+{
+    "command": "search_instrument",
+    "payload": {
+        "query": "HDFC"
+    }
+}

@@ -1,0 +1,156 @@
+{
+    "events": [
+        {
+            "date": "2014-05-16",
+            "category": "Political",
+            "event": "2014 General Election Results",
+            "description": "BJP wins majority, first single-party majority in 30 years.",
+            "impact_scope": "Macro",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2015-01-15",
+            "category": "Micro",
+            "event": "RBI Repo Rate Cut",
+            "description": "Unscheduled 25 bps rate cut, signaling start of easing cycle.",
+            "impact_scope": "Monetary",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2015-08-24",
+            "category": "Macro",
+            "event": "China Devaluation / Black Monday",
+            "description": "Global equity markets crash following China's currency devaluation.",
+            "impact_scope": "Global",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2016-06-23",
+            "category": "Macro",
+            "event": "Brexit Vote",
+            "description": "UK votes to leave the EU, global market volatility.",
+            "impact_scope": "Global",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2016-11-08",
+            "category": "Major News",
+            "event": "Demonetization",
+            "description": "High-value currency notes (500/1000) withdrawn overnight.",
+            "impact_scope": "Domestic",
+            "sentiment": "Volatility"
+        },
+        {
+            "date": "2017-07-01",
+            "category": "Major News",
+            "event": "GST Implementation",
+            "description": "One Nation One Tax - biggest indirect tax reform in India.",
+            "impact_scope": "Domestic",
+            "sentiment": "Long-term Bullish"
+        },
+        {
+            "date": "2018-09-01",
+            "category": "Micro",
+            "event": "IL&FS Crisis",
+            "description": "Defaults by IL&FS trigger liquidity crisis in NBFC sector.",
+            "impact_scope": "Financial Sector",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2019-02-26",
+            "category": "Political",
+            "event": "Balakot Airstrikes",
+            "description": "Geopolitical tension between India and Pakistan.",
+            "impact_scope": "National",
+            "sentiment": "Volatility"
+        },
+        {
+            "date": "2019-05-23",
+            "category": "Political",
+            "event": "2019 General Election Results",
+            "description": "NDA returns with larger majority.",
+            "impact_scope": "Macro",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2019-09-20",
+            "category": "Micro",
+            "event": "Corporate Tax Cut",
+            "description": "Nirmala Sitharaman announces massive corporate tax cuts.",
+            "impact_scope": "Domestic",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2020-03-23",
+            "category": "Major News",
+            "event": "COVID-19 Lockdown",
+            "description": "India announces nationwide lockdown, market hit lower circuit.",
+            "impact_scope": "Global/Domestic",
+            "sentiment": "Extreme Bearish"
+        },
+        {
+            "date": "2021-02-01",
+            "category": "Micro",
+            "event": "Growth Budget 2021",
+            "description": "Budget focused on infrastructure and spending post-COVID.",
+            "impact_scope": "Domestic",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2022-02-24",
+            "category": "Macro",
+            "event": "Russia-Ukraine War",
+            "description": "Russia invades Ukraine, oil prices spike, global markets crash.",
+            "impact_scope": "Global",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2022-05-04",
+            "category": "Micro",
+            "event": "Off-cycle RBI Rate Hike",
+            "description": "RBI surprises market with 40 bps hike to control inflation.",
+            "impact_scope": "Monetary",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2023-01-24",
+            "category": "Major News",
+            "event": "Hindenburg-Adani Report",
+            "description": "Short-seller report triggers massive sell-off in Adani Group stocks.",
+            "impact_scope": "Selected Stocks",
+            "sentiment": "Bearish"
+        },
+        {
+            "date": "2023-06-01",
+            "category": "Micro",
+            "event": "Introduction of NIFTY Financial Services (FINNIFTY) Weekly Options",
+            "description": "New liquidity instrument for traders.",
+            "impact_scope": "Derivatives",
+            "sentiment": "Neutral"
+        },
+        {
+            "date": "2024-02-01",
+            "category": "Micro",
+            "event": "Interim Budget 2024",
+            "description": "Focus on fiscal consolidation.",
+            "impact_scope": "Domestic",
+            "sentiment": "Bullish"
+        },
+        {
+            "date": "2024-06-04",
+            "category": "Political",
+            "event": "2024 General Election Results",
+            "description": "Unexpected lower tally for NDA, markets crash then recover.",
+            "impact_scope": "Macro",
+            "sentiment": "Volatility"
+        }
+    ],
+    "themes": {
+        "NIFTY_AUTO": "Performance driven by BS-VI transition (2020) and EV shift.",
+        "NIFTY_IT": "Massive rally during COVID (remote work) followed by 2023 slowdown.",
+        "NIFTY_PSU_BANK": "Deep consolidation until 2021, massive structural rerating 2022-2024.",
+        "NIFTY_METAL": "Correlated with Global Commodity cycles and China demand.",
+        "NIFTY_REALTY": "Long bear cycle (2014-2020), sharp recovery post-COVID RERA consolidation.",
+        "NIFTY_FMCG": "Defensive during volatility, slow but steady growth."
+    }
+}

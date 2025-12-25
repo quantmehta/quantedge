@@ -1,0 +1,122 @@
+[
+  {
+    "name": "NIFTY_50",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 7834.45,
+    "end_price": 25815.65,
+    "total_return_pct": 229.51,
+    "cagr_pct": 12.67,
+    "max_drawdown_pct": -38.44,
+    "volatility_annualized_pct": 16.18
+  },
+  {
+    "name": "NIFTY_AUTO",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 8154.9,
+    "end_price": 27306.3,
+    "total_return_pct": 234.85,
+    "cagr_pct": 12.85,
+    "max_drawdown_pct": -62.38,
+    "volatility_annualized_pct": 21.72
+  },
+  {
+    "name": "NIFTY_BANK",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 16825.15,
+    "end_price": 58905.25,
+    "total_return_pct": 250.1,
+    "cagr_pct": 13.36,
+    "max_drawdown_pct": -47.86,
+    "volatility_annualized_pct": 21.54
+  },
+  {
+    "name": "NIFTY_FMCG",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 20134.85,
+    "end_price": 54545.55,
+    "total_return_pct": 170.9,
+    "cagr_pct": 10.49,
+    "max_drawdown_pct": -29.56,
+    "volatility_annualized_pct": 15.97
+  },
+  {
+    "name": "NIFTY_METAL",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 1800.4,
+    "end_price": 10505.15,
+    "total_return_pct": 483.49,
+    "cagr_pct": 19.3,
+    "max_drawdown_pct": -64.33,
+    "volatility_annualized_pct": 28.04
+  },
+  {
+    "name": "NIFTY_NEXT_50",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 19724.75,
+    "end_price": 67809.45,
+    "total_return_pct": 243.78,
+    "cagr_pct": 13.15,
+    "max_drawdown_pct": -41.96,
+    "volatility_annualized_pct": 17.97
+  },
+  {
+    "name": "NIFTY_PHARMA",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 11556.95,
+    "end_price": 22563.3,
+    "total_return_pct": 95.24,
+    "cagr_pct": 6.92,
+    "max_drawdown_pct": -46.5,
+    "volatility_annualized_pct": 19.18
+  },
+  {
+    "name": "NIFTY_PSU_BANK",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 2941.55,
+    "end_price": 8315.9,
+    "total_return_pct": 182.7,
+    "cagr_pct": 10.96,
+    "max_drawdown_pct": -73.28,
+    "volatility_annualized_pct": 33.07
+  },
+  {
+    "name": "NIFTY_PVT_BANK",
+    "period": "2016-04-26 to 2025-12-18",
+    "start_price": 9520.2,
+    "end_price": 28332.8,
+    "total_return_pct": 197.61,
+    "cagr_pct": 11.97,
+    "max_drawdown_pct": -49.9,
+    "volatility_annualized_pct": 21.88
+  },
+  {
+    "name": "NIFTY_REALTY",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 169.75,
+    "end_price": 867.75,
+    "total_return_pct": 411.19,
+    "cagr_pct": 17.74,
+    "max_drawdown_pct": -56.44,
+    "volatility_annualized_pct": 29.08
+  },
+  {
+    "name": "SENSEX",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 25735.9,
+    "end_price": 84476.96,
+    "total_return_pct": 228.25,
+    "cagr_pct": 12.63,
+    "max_drawdown_pct": -38.07,
+    "volatility_annualized_pct": 16.28
+  },
+  {
+    "name": "VIX",
+    "period": "2015-12-20 to 2025-12-18",
+    "start_price": 14.22,
+    "end_price": 9.83,
+    "total_return_pct": -30.9,
+    "cagr_pct": -3.63,
+    "max_drawdown_pct": -88.24,
+    "volatility_annualized_pct": 83.24
+  }
+]
