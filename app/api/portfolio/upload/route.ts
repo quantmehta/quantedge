@@ -14,6 +14,7 @@ import { parseRows } from '@/lib/ingestion/rowParser';
 import { determineInstrumentColumn } from '@/lib/ingestion/instrumentColumn';
 import { GrowwEnricher } from '@/lib/groww/enrichment';
 import { IngestionResult, ParsedRow } from '@/lib/ingestion/types';
+import { toDecimal, Decimal } from '@/lib/decimal-utils';
 
 export const runtime = "nodejs"; // Force Node.js runtime for Buffer support
 
@@ -116,56 +117,51 @@ export async function POST(req: NextRequest) {
             const priceRaw = row.fields[priceKey];
             const ltpRaw = existingLtpKey ? row.fields[existingLtpKey] : undefined;
 
-            const cleanNumber = (v: any) => {
-                if (!v) return 0;
-                const n = parseFloat(String(v).replace(/[^0-9.-]/g, ''));
-                return isNaN(n) ? 0 : n;
+            const cleanNumberToDecimal = (v: any): Decimal => {
+                if (!v) return new Decimal(0);
+                const cleaned = String(v).replace(/[^0-9.-]/g, '');
+                if (cleaned === '' || isNaN(Number(cleaned))) return new Decimal(0);
+                return new Decimal(cleaned);
             };
 
-            const qty = cleanNumber(qtyRaw);
-            const purchasePrice = cleanNumber(priceRaw);
+            const qty = cleanNumberToDecimal(qtyRaw);
+            const purchasePrice = cleanNumberToDecimal(priceRaw);
 
             // Prioritize Groww LTP, fallback to file
-            let marketLtp = enrich?.ltp || 0;
-            if (!marketLtp && ltpRaw) {
-                marketLtp = cleanNumber(ltpRaw);
+            let marketLtp = toDecimal(enrich?.ltp || 0);
+            if (marketLtp.isZero() && ltpRaw) {
+                marketLtp = cleanNumberToDecimal(ltpRaw);
             }
 
             // 2. Perform Calculations (User Requested)
-            // Value (Investment) = Purchase Basis * Qty
-            const investmentValue = purchasePrice * qty;
-
-            // Current Value = Current Market LTP * Qty
-            const currentValue = marketLtp * qty;
-
-            // Net Growth = Current Value - Value
-            const netGrowth = currentValue - investmentValue;
-
-            // Net Growth %
-            const netGrowthPercent = (investmentValue !== 0) ? (netGrowth / investmentValue) * 100 : 0;
+            const investmentValue = purchasePrice.mul(qty);
+            const currentValue = marketLtp.mul(qty);
+            const netGrowth = currentValue.minus(investmentValue);
+            const netGrowthPercent = investmentValue.isZero() ? new Decimal(0) : netGrowth.div(investmentValue).mul(100);
 
             return {
                 ...row,
                 instrument_name: name,
                 symbol: enrich?.symbol || '',
                 // Standardized fields for UI
-                quantity: qty,
-                purchase_price: purchasePrice,
-                market_price: marketLtp,
-                investment_value: investmentValue,
-                current_value: currentValue,
-                net_growth: netGrowth,
-                net_growth_percent: netGrowthPercent,
+                quantity: qty.toNumber(),
+                purchase_price: purchasePrice.toNumber(),
+                market_price: marketLtp.toNumber(),
+                investment_value: investmentValue.toNumber(),
+                current_value: currentValue.toNumber(),
+                net_growth: netGrowth.toNumber(),
+                net_growth_percent: netGrowthPercent.toNumber(),
+
                 fields: {
                     ...row.fields,
                     symbol: enrich?.symbol || '',
-                    quantity: qty,
-                    purchase_price: purchasePrice,
-                    market_price: marketLtp,
-                    investment_value: investmentValue,
-                    current_value: currentValue,
-                    net_growth: netGrowth,
-                    net_growth_percent: netGrowthPercent,
+                    quantity: qty.toNumber(),
+                    purchase_price: purchasePrice.toNumber(),
+                    market_price: marketLtp.toNumber(),
+                    investment_value: investmentValue.toNumber(),
+                    current_value: currentValue.toNumber(),
+                    net_growth: netGrowth.toNumber(),
+                    net_growth_percent: netGrowthPercent.toNumber(),
                     _instrument_resolved: enrich?.symbol || ''
                 }
             };

@@ -135,9 +135,9 @@ function AnalysisPageContent() {
         );
     }
 
-    const realizedPnl = analysisData.realizedPnl || 0;
-    const unrealizedPnl = analysisData.unrealizedPnl || 0;
-    const totalPnl = analysisData.totalPnl || 0;
+    const realizedPnl = Number(analysisData.realizedPnl || 0);
+    const unrealizedPnl = Number(analysisData.unrealizedPnl || 0);
+    const totalPnl = Number(analysisData.totalPnl || 0);
     const suggestions = Array.isArray(analysisData.suggestions) ? analysisData.suggestions : [];
 
     return (

@@ -42,6 +42,13 @@ export default function UploadPage() {
     const [validationResult, setValidationResult] = useState<any>(null);
     const [runId, setRunId] = useState<string | null>(null);
 
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize] = useState(50);
+    const [holdings, setHoldings] = useState<any[]>([]);
+    const [pagination, setPagination] = useState<any>(null);
+    const [isPageLoading, setIsPageLoading] = useState(false);
+
     // 1. Handle File Selection
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -49,7 +56,24 @@ export default function UploadPage() {
         }
     };
 
-    // 2. Main Upload & Process Flow
+    // 3. Fetch Paginated Holdings
+    const fetchPage = async (targetUploadId: string, page: number) => {
+        setIsPageLoading(true);
+        try {
+            const res = await fetch(`/api/holdings/preview?uploadId=${targetUploadId}&page=${page}&pageSize=${pageSize}`);
+            const json = await res.json();
+            if (res.ok) {
+                setHoldings(json.rows);
+                setPagination(json.pagination);
+                setCurrentPage(page);
+            }
+        } catch (error) {
+            console.error("Failed to fetch page", error);
+        } finally {
+            setIsPageLoading(false);
+        }
+    };
+
     const handleUpload = async () => {
         if (!file) return;
 
@@ -86,14 +110,17 @@ export default function UploadPage() {
             const validateJson = await validateRes.json();
             setValidationResult(validateJson.data);
 
-            if (validateRes.ok && (validateJson.data?.runId)) {
+            if (validateRes.ok && (validateJson.data?.uploadId)) {
                 setStatusMessage("Finalizing portfolio snapshot...");
                 setRunId(validateJson.data.runId);
-                // Slight delay for visual confirmation of "Scanning"
+
+                // Fetch first page specifically from the new API to ensure consistency
+                await fetchPage(validateJson.data.uploadId, 1);
+
                 setTimeout(() => {
                     setStep("REVIEW");
                     setIsUploading(false);
-                }, 1200);
+                }, 800);
             } else {
                 if (!validateRes.ok && validateRes.status !== 422) {
                     throw new Error(validateJson.error?.message || "Validation process failed");
@@ -262,7 +289,7 @@ export default function UploadPage() {
                                     </div>
 
                                     {/* Main Preview Table */}
-                                    {validationResult.enrichedPreview && (
+                                    {holdings.length > 0 && (
                                         <Card className="border-none shadow-3xl bg-white rounded-3xl overflow-hidden ring-1 ring-slate-100">
                                             <div className="p-8 border-b bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                                 <div>
@@ -285,69 +312,114 @@ export default function UploadPage() {
                                                 </div>
                                             </div>
 
-                                            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-                                                <table className="w-full text-left border-collapse">
-                                                    <thead>
-                                                        <tr className="bg-slate-50/30 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                                            <th className="px-8 py-6">Instrument Profile</th>
-                                                            <th className="px-4 py-6 text-right">Qty</th>
-                                                            <th className="px-4 py-6 text-right">Purchase Basis</th>
-                                                            <th className="px-4 py-6 text-right text-slate-900">Value (INR)</th>
-                                                            <th className="px-4 py-6 text-right text-indigo-600">Current Market LTP</th>
-                                                            <th className="px-4 py-6 text-right text-slate-900">Current Value (INR)</th>
-                                                            <th className="px-8 py-6 text-right">Net Growth</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-slate-50">
-                                                        {validationResult.enrichedPreview.map((row: any, i: number) => (
-                                                            <tr key={i} className="group hover:bg-slate-50/50 transition-colors">
-                                                                <td className="px-8 py-6 whitespace-nowrap">
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                                                            {(row.company_name || row.instrument_name || "U")[0]}
-                                                                        </div>
-                                                                        <div className="flex flex-col">
-                                                                            <span className="font-bold text-slate-900 group-hover:text-primary transition-colors text-base">{row.company_name || row.instrument_name}</span>
-                                                                            <div className="flex items-center gap-1.5 mt-0.5">
-                                                                                <span className="text-[10px] font-black font-mono text-slate-400 uppercase tracking-tighter">{row.symbol || row._instrument_resolved}</span>
-                                                                                {(row.symbol || row._instrument_resolved) && <CheckCircle2 size={10} className="text-emerald-500" />}
+                                            <div className="relative">
+                                                {isPageLoading && (
+                                                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                                                        <div className="flex flex-col items-center gap-2">
+                                                            <Loader2 className="animate-spin text-primary" size={32} />
+                                                            <span className="text-[10px] font-black uppercase text-slate-400">Enriching Next Batch...</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+                                                    <table className="w-full text-left border-collapse">
+                                                        <thead>
+                                                            <tr className="bg-slate-50/30 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                                                <th className="px-8 py-6">Instrument Profile</th>
+                                                                <th className="px-4 py-6 text-right">Qty</th>
+                                                                <th className="px-4 py-6 text-right">Purchase Basis</th>
+                                                                <th className="px-4 py-6 text-right text-slate-900">Value (INR)</th>
+                                                                <th className="px-4 py-6 text-right text-indigo-600">Current Market LTP</th>
+                                                                <th className="px-4 py-6 text-right text-slate-900">Current Value (INR)</th>
+                                                                <th className="px-8 py-6 text-right">Net Growth</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-slate-50">
+                                                            {holdings.map((row: any, i: number) => (
+                                                                <tr key={i} className="group hover:bg-slate-50/50 transition-colors">
+                                                                    <td className="px-8 py-6 whitespace-nowrap">
+                                                                        <div className="flex items-center gap-4">
+                                                                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                                                {(row.company_name || row.instrument_name || "U")[0]}
+                                                                            </div>
+                                                                            <div className="flex flex-col">
+                                                                                <span className="font-bold text-slate-900 group-hover:text-primary transition-colors text-base">{row.company_name || row.instrument_name}</span>
+                                                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                                                    <span className="text-[10px] font-black font-mono text-slate-400 uppercase tracking-tighter">{row.symbol || row.rawIdentifier}</span>
+                                                                                    {row._is_enriched && <CheckCircle2 size={10} className="text-emerald-500" />}
+                                                                                    {!row._is_enriched && <Loader2 size={10} className="text-slate-300 animate-spin" />}
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-4 py-6 text-right font-mono font-medium text-slate-600 tabular-nums">
-                                                                    {row.quantity?.toLocaleString() || 0}
-                                                                </td>
-                                                                <td className="px-4 py-6 text-right font-mono text-slate-500 tabular-nums">
-                                                                    ₹{row.purchase_price?.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }) || '0.0'}
-                                                                </td>
-                                                                <td className="px-4 py-6 text-right font-mono text-slate-900 font-bold tabular-nums">
-                                                                    ₹{row.investment_value?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '0'}
-                                                                </td>
-                                                                <td className="px-4 py-6 text-right font-mono text-indigo-600 font-bold tabular-nums">
-                                                                    {row.market_price ? `₹${row.market_price.toLocaleString(undefined, { minimumFractionDigits: 1 })}` : <span className="text-slate-300 font-normal">--</span>}
-                                                                </td>
-                                                                <td className="px-4 py-6 text-right font-mono text-slate-900 font-bold tabular-nums">
-                                                                    ₹{row.current_value?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '0'}
-                                                                </td>
-                                                                <td className="px-8 py-6 text-right">
-                                                                    <div className="flex flex-col items-end">
-                                                                        <span className={cn("font-black tabular-nums font-mono text-base font-bold", (row.net_growth || 0) >= 0 ? "text-emerald-600" : "text-rose-600")}>
-                                                                            {row.net_growth >= 0 ? '+' : ''}₹{row.net_growth?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '0'}
-                                                                        </span>
-                                                                        <Badge className={cn(
-                                                                            "mt-1.5 text-[9px] font-black border-none px-2 rounded-full",
-                                                                            (row.net_growth || 0) >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
-                                                                        )}>
-                                                                            {row.net_growth_percent ? `${row.net_growth_percent.toFixed(2)}%` : '0.00%'}
-                                                                        </Badge>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
+                                                                    </td>
+                                                                    <td className="px-4 py-6 text-right font-mono font-medium text-slate-600 tabular-nums">
+                                                                        {row.quantity?.toLocaleString() || 0}
+                                                                    </td>
+                                                                    <td className="px-4 py-6 text-right font-mono text-slate-500 tabular-nums">
+                                                                        ₹{row.purchase_price?.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 }) || '0.0'}
+                                                                    </td>
+                                                                    <td className="px-4 py-6 text-right font-mono text-slate-900 font-bold tabular-nums">
+                                                                        ₹{(row.purchase_price * row.quantity)?.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '0'}
+                                                                    </td>
+                                                                    <td className="px-4 py-6 text-right font-mono text-indigo-600 font-bold tabular-nums">
+                                                                        {row.market_price ? `₹${row.market_price.toLocaleString(undefined, { minimumFractionDigits: 1 })}` : <span className="text-slate-300 font-normal">--</span>}
+                                                                    </td>
+                                                                    <td className="px-4 py-6 text-right font-mono text-slate-900 font-bold tabular-nums">
+                                                                        {row.market_price ? `₹${(row.market_price * row.quantity).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '--'}
+                                                                    </td>
+                                                                    <td className="px-8 py-6 text-right">
+                                                                        {row.market_price ? (
+                                                                            <div className="flex flex-col items-end">
+                                                                                <span className={cn("font-black tabular-nums font-mono text-base font-bold", (row.market_price * row.quantity - row.purchase_price * row.quantity) >= 0 ? "text-emerald-600" : "text-rose-600")}>
+                                                                                    {(row.market_price * row.quantity - row.purchase_price * row.quantity) >= 0 ? '+' : ''}₹{(row.market_price * row.quantity - row.purchase_price * row.quantity).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                                                                </span>
+                                                                                <Badge className={cn(
+                                                                                    "mt-1.5 text-[9px] font-black border-none px-2 rounded-full",
+                                                                                    (row.market_price * row.quantity - row.purchase_price * row.quantity) >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+                                                                                )}>
+                                                                                    {(((row.market_price * row.quantity - row.purchase_price * row.quantity) / (row.purchase_price * row.quantity || 1)) * 100).toFixed(2)}%
+                                                                                </Badge>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <span className="text-slate-300 font-mono text-xs italic">Pending enrich...</span>
+                                                                        )}
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
+
+                                            {/* Pagination Controls */}
+                                            {pagination && pagination.totalPages > 1 && (
+                                                <div className="p-8 border-t bg-slate-50/30 flex items-center justify-between">
+                                                    <div className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                                                        Page {pagination.page} of {pagination.totalPages}
+                                                        <span className="ml-4 text-slate-300">Total {pagination.total} Units</span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            disabled={currentPage === 1 || isPageLoading}
+                                                            onClick={() => fetchPage(uploadId!, currentPage - 1)}
+                                                            className="rounded-xl border-slate-200"
+                                                        >
+                                                            Previous
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            disabled={currentPage === pagination.totalPages || isPageLoading}
+                                                            onClick={() => fetchPage(uploadId!, currentPage + 1)}
+                                                            className="rounded-xl border-slate-200"
+                                                        >
+                                                            Next
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </Card>
                                     )}
 

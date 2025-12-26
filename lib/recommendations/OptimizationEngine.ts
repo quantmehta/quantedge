@@ -1,6 +1,7 @@
 
 import { Holding, EventImpactRow } from '@prisma/client';
 import { Recommendation, SignalProfile } from './RecommendationContracts';
+import { toDecimal, Decimal } from '../decimal-utils';
 // We should import the seed universe but it's a JSON file. 
 // We will load it inside the class or pass it in.
 
@@ -35,12 +36,12 @@ export class OptimizationEngine {
 
         for (const h of holdings) {
             if (!h.resolvedInstrumentId) continue;
-            // Use snapshot price or latest price
-            // Assuming quantity is string/decimal in Prisma, convert to number
-            // Actually prisma Decimal is object or string depending on config. 
-            // We'll treat as number for MVP logic (assumption: simplified for speed).
-            const val = Number(h.quantity) * (prices[h.rawIdentifier] || Number(h.costPrice));
-            const w = val / portfolioValue;
+
+            const qty = toDecimal(h.quantity);
+            const price = toDecimal(prices[h.rawIdentifier] || h.costPrice);
+            const val = qty.mul(price);
+            const w = val.div(toDecimal(portfolioValue)).toNumber();
+
             weights.set(h.id, w);
 
             const sector = h.sector || 'Unclassified';
@@ -53,7 +54,8 @@ export class OptimizationEngine {
             const signal = signals[symbol];
             const weight = weights.get(h.id) || 0;
             const impactRow = eventImpacts.find(r => r.holdingId === h.id);
-            const price = prices[symbol] || Number(h.costPrice);
+            const price = toDecimal(prices[symbol] || h.costPrice).toNumber();
+
 
             // A. SCORING (-10 to +10)
             let score = 0;

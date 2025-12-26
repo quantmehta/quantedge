@@ -1,10 +1,10 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { GrowwService } from '@/lib/groww/GrowwService';
 import { SignalEngine } from '@/lib/recommendations/SignalEngine';
 import { OptimizationEngine } from '@/lib/recommendations/OptimizationEngine';
 import { SignalProfile } from '@/lib/recommendations/RecommendationContracts';
+import { toDecimal, Decimal } from '@/lib/decimal-utils';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -104,9 +104,7 @@ export async function POST(req: NextRequest) {
 
         let impacts: any[] = [];
         if (eventRun) {
-            // TS Error workaround: prisma.eventImpactRow might be missing in client
             try {
-                // @ts-ignore
                 impacts = await prisma.eventImpactRow.findMany({
                     where: { runEventImpactId: eventRun.id }
                 });
@@ -118,9 +116,11 @@ export async function POST(req: NextRequest) {
 
         // 5. Run Optimization
         // Estimate portfolio value
-        let totalVal = 0;
+        let totalVal = new Decimal(0);
         for (const h of holdings) {
-            totalVal += Number(h.quantity) * (latestPrices[h.rawIdentifier] || Number(h.costPrice));
+            const qty = toDecimal(h.quantity);
+            const price = toDecimal(latestPrices[h.rawIdentifier] || h.costPrice);
+            totalVal = totalVal.plus(qty.mul(price));
         }
 
         console.log("[Recs] Running Optimization Engine...");
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
             latestPrices,
             signals,
             impacts,
-            totalVal,
+            totalVal.toNumber(),
             universe
         );
 

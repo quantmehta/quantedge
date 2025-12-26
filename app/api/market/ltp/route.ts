@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { fetchLtpBatch } from '@/lib/market-client';
+import { toDecimal, Decimal } from '@/lib/decimal-utils';
 
 // Configurable TTL
 const TTL_SECONDS = 30;
@@ -109,7 +110,8 @@ export async function GET(req: NextRequest) {
                     if (instId && item.price) {
                         itemsToCreate.push({
                             instrumentId: instId,
-                            price: Number(item.price),
+                            price: toDecimal(item.price).toNumber(),
+
                             currency: item.curr || 'INR',
                             asOf: new Date(item.asOf || now),
                             source: item.source || 'groww'
@@ -151,7 +153,8 @@ export async function GET(req: NextRequest) {
                 const cached = cacheMap[h.resolvedInstrumentId];
                 if (cached) {
                     priceData = {
-                        value: Number(cached.price),
+                        value: toDecimal(cached.price).toNumber(),
+
                         asOf: cached.asOf,
                         source: cached.source
                     };
@@ -171,11 +174,12 @@ export async function GET(req: NextRequest) {
                 holdingId: h.id,
                 instrumentId: h.resolvedInstrumentId,
                 symbol: h.instrument?.identifier,
-                quantity: Number(h.quantity),
+                quantity: toDecimal(h.quantity).toNumber(),
                 price: priceData,
                 freshness,
-                marketValue: priceData ? (Number(h.quantity) * Number(priceData.value)) : null
+                marketValue: priceData ? toDecimal(h.quantity).mul(toDecimal(priceData.value)).toNumber() : null
             };
+
         });
 
         const meta = {

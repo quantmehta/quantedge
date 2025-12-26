@@ -7,7 +7,7 @@ interface BucketConfig {
 }
 
 const BUCKETS: Record<BucketType, BucketConfig> = {
-    'LIVE_DATA': { maxTokens: 10, refillRate: 5 },  // High throughput
+    'LIVE_DATA': { maxTokens: 50, refillRate: 10 },  // High throughput for portfolio batching
     'ORDERS': { maxTokens: 2, refillRate: 0.5 },    // Low throughput, critical
     'NON_TRADING': { maxTokens: 5, refillRate: 2 }  // Metadata sync
 };

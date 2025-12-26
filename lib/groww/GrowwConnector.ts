@@ -10,7 +10,7 @@ import { GrowwClientError, GrowwErrorType } from './GrowwErrors';
 
 // Path to the Python CLI module (run as module, not script)
 const PYTHON_MODULE = 'python.quantedge_groww.cli';
-const TIMEOUT_MS = 60000; // 60s timeout for network calls (increased for cold cache)
+const TIMEOUT_MS = 2000; // 2s for rapid rescue failover
 
 export class GrowwConnector {
 

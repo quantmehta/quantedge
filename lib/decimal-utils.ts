@@ -32,4 +32,9 @@ export const parseInputToDecimal = (input: string): Decimal => {
     return new Decimal(cleaned);
 };
 
+export const sumDecimals = (values: (Decimal | string | number)[]): Decimal => {
+    return values.reduce((sum: Decimal, val) => sum.plus(toDecimal(val)), new Decimal(0));
+};
+
 export { Decimal };
+

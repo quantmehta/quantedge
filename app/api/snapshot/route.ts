@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { SnapshotEngine, HoldingInput, PriceInput, HistoryInput } from '@/lib/snapshot-engine';
 import { successResponse, errorResponse, ErrorCodes, appendAuditEntry } from '@/lib/api-response';
+import { toDecimal } from '@/lib/decimal-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,7 +67,8 @@ export async function GET(req: NextRequest) {
             if (!priceMap[p.instrumentId]) {
                 priceMap[p.instrumentId] = {
                     instrumentId: p.instrumentId,
-                    price: Number(p.price),
+                    price: toDecimal(p.price).toNumber(),
+
                     asOf: p.asOf,
                     source: p.source
                 };
@@ -81,7 +83,8 @@ export async function GET(req: NextRequest) {
             }
             historyMap[h.instrumentId].candles.push({
                 date: h.date,
-                close: Number(h.close)
+                close: toDecimal(h.close).toNumber()
+
             });
         });
 
@@ -89,8 +92,9 @@ export async function GET(req: NextRequest) {
         const engineHoldings: HoldingInput[] = holdings.map(h => ({
             id: h.id,
             identifier: h.rawIdentifier,
-            quantity: Number(h.quantity),
-            costPrice: Number(h.costPrice),
+            quantity: toDecimal(h.quantity).toNumber(),
+            costPrice: toDecimal(h.costPrice).toNumber(),
+
             assetClass: h.assetClass || 'Equity',
             sector: h.sector || 'Unknown',
             resolvedInstrumentId: h.resolvedInstrumentId || undefined
