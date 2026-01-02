@@ -4,6 +4,7 @@ import { debugLog } from './debug';
 export interface EnrichedMetadata {
     symbol: string | null;
     companyName: string | null;
+    exchange?: string;
     confidence: number;
 }
 
@@ -28,6 +29,46 @@ export class GrowwIngestionLookup {
         name?: string | null;
         rawInstrument?: string | null;
     }): Promise<EnrichedMetadata> {
+        // Check cache first (Synchronous check usually, but cache is in-memory object)
+        const { symbol, name, rawInstrument } = params;
+        const cacheKey = JSON.stringify({ symbol, name, rawInstrument }).toLowerCase();
+        if (lookupCache[cacheKey]) return lookupCache[cacheKey];
+
+        const ROW_SOFT_TIMEOUT_MS = 1000; // 1s soft limit for "Quick" return
+
+        const internalPromise = this._resolveMetadataInternal(params);
+
+        const timeoutPromise = new Promise<string>(resolve =>
+            setTimeout(() => resolve('TIMEOUT'), ROW_SOFT_TIMEOUT_MS)
+        );
+
+        const winner = await Promise.race([internalPromise, timeoutPromise]);
+
+        if (winner === 'TIMEOUT') {
+            // Log backgrounding
+            // Ensure internalPromise continues and populates cache eventually
+            // We don't await it, just let it run.
+            // Note: Since _resolveMetadataInternal sets lookupCache at the end, it handles caching.
+            try {
+                const fs = require('fs');
+                fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\trace_lookup.log',
+                    `[${new Date().toISOString()}] Backgrounding resolution for "${params.rawInstrument || params.name}" due to timeout.\n`);
+            } catch (e) { }
+
+            return { symbol: null, companyName: params.name || params.rawInstrument || null, confidence: 0 };
+        }
+
+        return winner as EnrichedMetadata;
+    }
+
+    /**
+     * Internal implementation of resolution
+     */
+    private static async _resolveMetadataInternal(params: {
+        symbol?: string | null;
+        name?: string | null;
+        rawInstrument?: string | null;
+    }): Promise<EnrichedMetadata> {
         const { symbol, name, rawInstrument } = params;
         const queryBase = (symbol || name || rawInstrument || '').trim();
         if (!queryBase) return { symbol: null, companyName: null, confidence: 0 };
@@ -36,37 +77,64 @@ export class GrowwIngestionLookup {
         const cacheKey = JSON.stringify({ symbol, name, rawInstrument }).toLowerCase();
         if (lookupCache[cacheKey]) return lookupCache[cacheKey];
 
-        const trySearch = async (q: string): Promise<EnrichedMetadata | null> => {
+        const trySearch = async (q: string, preferredExchange = "NSE"): Promise<EnrichedMetadata | null> => {
             try {
-                const results = await GrowwService.searchInstruments(q);
-                if (!results || results.length === 0) return null;
+                // Determine exchanges to try: Preferred -> Fallback
+                const exchangesToTry = [preferredExchange];
+                if (preferredExchange === "NSE") exchangesToTry.push("BSE");
+                // if preferred is BSE, maybe we don't fallback to NSE automatically unless requested, 
+                // but user asked for BSE fallback if NSE fails.
 
-                // Rank based on query overlap
-                const qNorm = q.toUpperCase();
-                const ranked = results.sort((a, b) => {
-                    const aSym = (a.tradingSymbol || '').toUpperCase();
-                    const bSym = (b.tradingSymbol || '').toUpperCase();
-                    const aName = (a.name || '').toUpperCase();
-                    const bName = (b.name || '').toUpperCase();
+                for (const exchange of exchangesToTry) {
+                    // Timeout-wrapped search
+                    const SEARCH_TIMEOUT_MS = 3000;
+                    const searchPromise = GrowwService.searchInstruments(q, exchange);
 
-                    // Boost exact symbol matches
-                    if (aSym === qNorm && bSym !== qNorm) return -1;
-                    if (bSym === qNorm && aSym !== qNorm) return 1;
+                    const timeoutPromise = new Promise<null>(resolve =>
+                        setTimeout(() => resolve(null), SEARCH_TIMEOUT_MS)
+                    );
 
-                    // Boost exact name matches
-                    if (aName === qNorm && bName !== qNorm) return -1;
-                    if (bName === qNorm && aName !== qNorm) return 1;
+                    // Use race to implement timeout
+                    // Note: If timeout triggers, we get null, loop continues to next exchange (BSE)
+                    let results = await Promise.race([searchPromise, timeoutPromise]);
 
-                    return (b.searchScore || 0) - (a.searchScore || 0);
-                });
+                    if (!results && exchange === "NSE") {
+                        // Timeout occurred on NSE, proceed to BSE
+                        continue;
+                    }
 
-                if (!ranked.length) return null;
-                const best = ranked[0];
-                return {
-                    symbol: best.tradingSymbol,
-                    companyName: best.name || q,
-                    confidence: best.tradingSymbol.toUpperCase() === qNorm ? 0.95 : 0.8
-                };
+                    if (!results || results.length === 0) continue;
+
+                    // Rank based on query overlap
+                    const qNorm = q.toUpperCase();
+                    const ranked = results.sort((a, b) => {
+                        const aSym = (a.tradingSymbol || '').toUpperCase();
+                        const bSym = (b.tradingSymbol || '').toUpperCase();
+                        const aName = (a.name || '').toUpperCase();
+                        const bName = (b.name || '').toUpperCase();
+
+                        // Boost exact symbol matches
+                        if (aSym === qNorm && bSym !== qNorm) return -1;
+                        if (bSym === qNorm && aSym !== qNorm) return 1;
+
+                        // Boost exact name matches
+                        if (aName === qNorm && bName !== qNorm) return -1;
+                        if (bName === qNorm && aName !== qNorm) return 1;
+
+                        return (b.searchScore || 0) - (a.searchScore || 0);
+                    });
+
+                    if (!ranked.length) continue;
+
+                    const best = ranked[0];
+                    return {
+                        symbol: best.tradingSymbol,
+                        companyName: best.name || q,
+                        exchange: exchange,
+                        confidence: best.tradingSymbol.toUpperCase() === qNorm ? 0.95 : 0.8
+                    };
+                }
+                return null;
             } catch (e) {
                 return null;
             }
@@ -107,7 +175,7 @@ export class GrowwIngestionLookup {
      * Bulk resolve for a preview or small set of rows
      */
     static async enrichPreviewRows(rows: Record<string, any>[], roles: Record<string, string>): Promise<any[]> {
-        this.clearCache();
+        // this.clearCache(); // Removed to support background progressive loading
         const instrumentKey = roles['instrument'];
         const qtyKey = roles['quantity'];
         const priceKey = roles['purchase_price'];
@@ -171,64 +239,91 @@ export class GrowwIngestionLookup {
         });
 
         // 2. Batch fetch LTPs
-        const validSymbols = Array.from(resolvedMap.values())
-            .filter(m => m.symbol)
-            .map(m => {
-                let cleanSymbol = m.symbol!.replace(/[-\s]/g, '_').toUpperCase();
-                if (!cleanSymbol.startsWith('NSE_') && !cleanSymbol.startsWith('BSE_')) {
-                    cleanSymbol = `NSE_${cleanSymbol}`;
-                }
-                return cleanSymbol;
-            });
+        // 2. Fetch Prices (LTP for NSE, Quote for BSE as fallback)
+        const validItems = Array.from(resolvedMap.values()).filter(m => m.symbol);
 
-        const uniqueSymbols = Array.from(new Set(validSymbols));
-        traceLog(`Fetching LTP for ${uniqueSymbols.length} unique symbols: ${uniqueSymbols.slice(0, 5).join(', ')}`);
+        const nseSymbols: string[] = [];
+        const bseSymbols: string[] = [];
+
+        validItems.forEach(m => {
+            const sym = m.symbol!.toUpperCase().replace(/[-\s]/g, '_');
+            const exch = (m.exchange || 'NSE').toUpperCase();
+
+            if (exch === 'BSE') {
+                bseSymbols.push(sym); // Store raw symbol for quote fetch
+            } else {
+                // Default to NSE logic
+                let clean = sym;
+                if (!clean.startsWith('NSE_') && !clean.startsWith('BSE_')) {
+                    clean = `NSE_${clean}`;
+                }
+                nseSymbols.push(clean);
+            }
+        });
+
+        const uniqueNse = Array.from(new Set(nseSymbols));
+        const uniqueBse = Array.from(new Set(bseSymbols)); // Raw symbols for BSE quote
+
+        traceLog(`Fetching Prices: ${uniqueNse.length} NSE (Batch), ${uniqueBse.length} BSE (Quote)`);
 
         const ltpMap: Record<string, number> = {};
-        const LTP_TIMEOUT_MS = 15000; // Increased to 15s for large batches
+        const LTP_TIMEOUT_MS = 15000;
 
-        if (uniqueSymbols.length > 0) {
+        // Execute BSE Fetches (Parallel Quotes)
+        const bsePromises = uniqueBse.map(async sym => {
             try {
-                const CHUNK_SIZE = 50;
-                const ltpPromises: Promise<void>[] = [];
+                const quote = await GrowwService.getQuote(sym, "BSE");
+                if (quote && quote.last_price) {
+                    ltpMap[`BSE_${sym}`] = quote.last_price;
+                    ltpMap[sym] = quote.last_price; // Fallback key
+                    traceLog(`Resolved BSE Price: ${sym} -> ${quote.last_price}`);
+                }
+            } catch (e) {
+                traceLog(`Failed to fetch BSE quote for ${sym}`);
+            }
+        });
 
-                for (let i = 0; i < uniqueSymbols.length; i += CHUNK_SIZE) {
-                    const chunk = uniqueSymbols.slice(i, i + CHUNK_SIZE);
+        // Execute NSE Fetches (Batch LTP)
+        const nsePromise = (async () => {
+            if (uniqueNse.length > 0) {
+                try {
+                    const CHUNK_SIZE = 50;
+                    // ... existing chunk logic ...
+                    for (let i = 0; i < uniqueNse.length; i += CHUNK_SIZE) {
+                        const chunk = uniqueNse.slice(i, i + CHUNK_SIZE);
+                        // ... same robust logic ...
 
-                    // Wrap each chunk fetch with timeout
-                    const chunkPromise = (async () => {
+                        // Re-implementing chunk loop here to ensure correct variable scope if I replaced the whole block
+                        // But I am replacing validSymbols block.
+                        // Let's rewrite the NSE fetching part cleanly.
+
                         try {
                             const timeoutPromise = new Promise<never>((_, reject) =>
                                 setTimeout(() => reject(new Error('LTP chunk timeout')), LTP_TIMEOUT_MS)
                             );
                             const fetchPromise = GrowwService.getLtp(chunk);
-
-                            // console.log(`[GrowwIngestionLookup] Fetching LTP for ${chunk.length} symbols: ${chunk.join(', ')}`);
                             const ltpResults = await Promise.race([fetchPromise, timeoutPromise]);
-                            // console.log(`[GrowwIngestionLookup] Received ${ltpResults.length} LTP results`);
 
-                            ltpResults.forEach(r => {
-                                const fullSym = r.symbol.toUpperCase().replace(/[-\s]/g, '_');
-                                const baseSym = fullSym.replace(/^(NSE|BSE)_/, '');
-                                ltpMap[fullSym] = r.price;
-                                ltpMap[baseSym] = r.price;
-                            });
-                            traceLog(`Received ${ltpResults.length} LTP prices. Sample: ${Object.keys(ltpMap).slice(0, 3).join(', ')}`);
-                        } catch (chunkErr: any) {
-                            traceLog(`LTP fetch failed/timeout: ${chunkErr.message}`);
-                            console.warn(`[GrowwIngestionLookup] LTP chunk timeout/error, continuing without prices`);
+                            // Process results
+                            if (Array.isArray(ltpResults)) {
+                                ltpResults.forEach(r => {
+                                    const fullSym = r.symbol.toUpperCase().replace(/[-\s]/g, '_');
+                                    const baseSym = fullSym.replace(/^(NSE|BSE)_/, '');
+                                    ltpMap[fullSym] = r.price;
+                                    ltpMap[baseSym] = r.price;
+                                });
+                            }
+                        } catch (e: any) {
+                            traceLog(`NSE Batch failed: ${e.message}`);
                         }
-                    })();
-
-                    ltpPromises.push(chunkPromise);
-                }
-
-                // Run all chunks in parallel for faster processing
-                await Promise.all(ltpPromises);
-            } catch (e) {
-                console.error("[GrowwIngestionLookup] Failed to fetch batch LTPs:", e);
+                    }
+                } catch (e) { }
             }
-        }
+        })();
+
+        // Wait for all
+        await Promise.all([nsePromise, ...bsePromises]);
+
 
         // 3. Construct enriched rows with calculations
         return rows.map((row, idx) => {
