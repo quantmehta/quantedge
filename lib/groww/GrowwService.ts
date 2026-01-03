@@ -14,76 +14,36 @@ export class GrowwService {
      * @param exchangeTradingSymbols - Array of symbols like ["NSE_RELIANCE", "NSE_TCS"]
      * @param segment - "CASH" for equities, "FNO" for derivatives
      */
+    /**
+     * Fetches LTP for multiple symbols.
+     * @param exchangeTradingSymbols - Array of symbols like ["NSE_RELIANCE", "NSE_TCS"]
+     * @param segment - "CASH" for equities, "FNO" for derivatives
+     */
     static async getLtp(exchangeTradingSymbols: string[], segment = "CASH"): Promise<GrowwLtpResponse[]> {
-        if (exchangeTradingSymbols.length === 0) return [];
+        // ... (existing implementation) ...
+        return this.getSmartLtp(exchangeTradingSymbols.map(s => ({ symbol: s })), segment);
+    }
+
+    /**
+     * Smart LTP Fetch - Supports Symbol + Name for backend resolution
+     */
+    static async getSmartLtp(items: { symbol: string, name?: string, exchange?: string }[], segment = "CASH"): Promise<GrowwLtpResponse[]> {
+        if (items.length === 0) return [];
 
         await growwRateLimiter.waitForToken('LIVE_DATA');
 
-        // Batch in groups of 10 (reduced for stability)
-        const BATCH_SIZE = 10;
-        const allResults: GrowwLtpResponse[] = [];
+        try {
+            // Send all items at once. Python backend handles batching/concurrency.
+            // This ensures 'original_index' maps correctly to the input list 0..N
+            const response = await GrowwConnector.callPython('smart_ltp', {
+                items: items
+            });
 
-        for (let i = 0; i < exchangeTradingSymbols.length; i += BATCH_SIZE) {
-            const batch = exchangeTradingSymbols.slice(i, i + BATCH_SIZE);
-            try {
-                // Persistent debug log
-                try {
-                    const fs = require('fs');
-                    fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\ltp_debug.log',
-                        `[${new Date().toISOString()}] Attempting LTP for ${batch.length} symbols: ${batch.slice(0, 3).join(', ')}\n`);
-                } catch (e) { }
-
-                const response = await GrowwConnector.callPython('ltp_batch', {
-                    symbols: batch,
-                    segment
-                });
-
-                try {
-                    const fs = require('fs');
-                    fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\ltp_debug.log',
-                        `[${new Date().toISOString()}] Received response: ${response.ok ? 'OK' : 'FAILED'}, items: ${response.items?.length || 0}\n`);
-                } catch (e) { }
-
-                const items = response.items || (response.data && response.data.items) || [];
-                if (items.length > 0) {
-                    allResults.push(...items);
-                }
-            } catch (e: any) {
-                try {
-                    const fs = require('fs');
-                    fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\ltp_debug.log',
-                        `[${new Date().toISOString()}] Batch failed, attempting rescue for ${batch.length} symbols.\n`);
-                } catch (logErr) { }
-
-                // RESCUE LOGIC: Try individually if batch fails
-                for (const sym of batch) {
-                    try {
-                        const singleRes = await GrowwConnector.callPython('ltp_batch', {
-                            symbols: [sym],
-                            segment
-                        });
-                        const sItems = singleRes.items || (singleRes.data && singleRes.data.items) || [];
-                        if (sItems.length > 0) {
-                            allResults.push(...sItems);
-                            try {
-                                const fs = require('fs');
-                                fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\ltp_debug.log',
-                                    `[${new Date().toISOString()}] Rescued ${sym}: ${sItems[0].price}\n`);
-                            } catch (logErr) { }
-                        }
-                    } catch (singleErr: any) {
-                        try {
-                            const fs = require('fs');
-                            fs.appendFileSync('C:\\Users\\divit\\OneDrive\\Documents\\DTH\\decision-maker\\ltp_debug.log',
-                                `[${new Date().toISOString()}] Rescue failed for ${sym}: ${singleErr.message}\n`);
-                        } catch (logErr) { }
-                    }
-                }
-                // DO NOT THROW HERE. We want to return whatever we salvaged.
-            }
+            return response.items || (response.data && response.data.items) || [];
+        } catch (e: any) {
+            console.error("Smart LTP failed", e);
+            return [];
         }
-
-        return allResults;
     }
 
     /**
@@ -190,9 +150,6 @@ export class GrowwService {
         }
     }
 
-    /**
-     * Gets full quote data for a single instrument.
-     */
     static async getQuote(tradingSymbol: string, exchange = "NSE", segment = "CASH"): Promise<any> {
         await growwRateLimiter.waitForToken('LIVE_DATA');
 
@@ -204,4 +161,22 @@ export class GrowwService {
 
         return response.quote || null;
     }
+
+    /**
+     * Fetches ALL available instruments.
+     * WARNING: Large dataset. Use with caching.
+     */
+    static async getAllInstruments(): Promise<{ instruments: any[], count: number }> {
+        const response = await GrowwConnector.callPython('get_all_instruments', {});
+        return response.data || { instruments: [], count: 0 };
+    }
+
+    /**
+     * Fetches user profile data (beta).
+     */
+    static async getUserProfile(): Promise<any> {
+        const response = await GrowwConnector.callPython('user_profile', {});
+        return response.data || {};
+    }
 }
+
