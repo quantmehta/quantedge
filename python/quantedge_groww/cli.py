@@ -39,12 +39,20 @@ def main():
         if command == "AUTH_DIAGNOSE":
             from .health import diagnose_auth
             response_data = diagnose_auth()
+
+        elif command == "user_profile":
+            from .auth import AuthManager
+            response_data = AuthManager.get_user_profile_data()
             
         elif command == "ltp_batch":
             from .market_data import get_ltp
             symbols = payload.get("exchangeTradingSymbols", payload.get("symbols", []))
             segment = payload.get("segment", "CASH")
-            response_data = get_ltp(symbols, segment)
+        elif command == "smart_ltp":
+            from .market_data import get_smart_ltp
+            # Payload 'items' might be list of strings or objects
+            items = payload.get("items", payload.get("symbols", []))
+            response_data = get_smart_ltp(items)
             
         elif command == "ohlc_batch":
             from .market_data import get_ohlc
